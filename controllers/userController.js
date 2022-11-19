@@ -23,8 +23,40 @@ const createUser = (req, res) =>{
     .catch((err) => res.status(500).json(err));
 }
 
+const updateUser = (req, res) => {
+  const userId = req.params.userId
+  User.findOneAndUpdate(
+    userId,
+    { $set: req.body },
+    { new: true},
+    (err, result) => {
+      if (result) {
+        res.status(200).json(result);
+        console.log(`Updated user: ${result}`);
+      } else {
+        console.log('Uh Oh, something went wrong');
+        res.status(500).json({ message: 'something went wrong' });
+      }
+    }
+  )
+}
+
+const deleteUser = (req, res) => {
+  const userId = req.params.userId
+  User.findByIdAndDelete(userId, (err, result) => {
+    if (err) {
+      console.log(err)
+    } else {
+      res.status(200).json(result);
+      console.log("Deleted : ", result);
+    }
+  })
+}
+
 module.exports = {
   getUsers,
   getSingleUser,
-  createUser
+  createUser,
+  updateUser,
+  deleteUser
 };

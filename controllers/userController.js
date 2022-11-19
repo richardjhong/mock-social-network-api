@@ -53,10 +53,46 @@ const deleteUser = (req, res) => {
   })
 }
 
+const addFriend = (req, res) => {
+  User.findOneAndUpdate(
+    { _id: req.params.userId },
+    { $push: { friends: req.params.friendId }},
+    {new: true},
+    (err, result) => {
+      if (result) {
+        res.status(200).json(result);
+        console.log(`Added user friend: ${result}`);
+      } else {
+        console.log('Uh Oh, something went wrong');
+        res.status(500).json({ message: 'something went wrong' });
+      }
+    }
+  )
+}
+
+const removeFriend = (req, res) => {
+  User.findOneAndUpdate(
+    { _id: req.params.userId },
+    { $pull: { friends: req.params.friendId }},
+    {new: true},
+    (err, result) => {
+      if (result) {
+        res.status(200).json(result);
+        console.log(`Added user friend: ${result}`);
+      } else {
+        console.log('Uh Oh, something went wrong');
+        res.status(500).json({ message: 'something went wrong' });
+      }
+    }
+  )
+}
+
 module.exports = {
   getUsers,
   getSingleUser,
   createUser,
   updateUser,
-  deleteUser
+  deleteUser,
+  addFriend,
+  removeFriend
 };

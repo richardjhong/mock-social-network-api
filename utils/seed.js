@@ -1,6 +1,6 @@
 const connection = require('../config/connection');
 const { User, Thought } = require('../models');
-const { getRandomName, getRandomEmail, getRandomThought } = require('./data');
+const { getRandomEmail, getRandomUserName } = require('./data');
 
 // Start the seeding runtime timer
 console.time('seeding');
@@ -11,13 +11,12 @@ connection.once('open', async () => {
   await User.deleteMany({});
   await Thought.deleteMany({});
 
-
   // Empty arrays for randomly generated users
   const users = [];
   const usedEmails = [];
 
   for (let i = 0; i < 10; i++) {
-    const name = getRandomName();
+    const username = getRandomUserName();
     let email = getRandomEmail();
     if (usedEmails.indexOf(email) !== -1) {
       while (usedEmails.indexOf(email) !== -1) {
@@ -27,7 +26,7 @@ connection.once('open', async () => {
 
     usedEmails.push(email)
     const newUser = {
-      username: name,
+      username: username,
       email: email,
       thoughts: [],
       friends: []

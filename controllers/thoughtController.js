@@ -1,3 +1,4 @@
+const { Types } = require('mongoose')
 const Thought = require('../models/Thought')
 const User = require('../models/User')
 
@@ -43,8 +44,46 @@ const createThought = (req, res) => {
   })
 }
 
+const updateThought = (req, res) => {
+  Thought.findOneAndUpdate(
+    req.params.thoughtId,
+    { $set: req.body },
+    { new: true },
+    (err, result) => {
+      if (result) {
+        res.status(200).json(result)
+        console.log(`Updated thought: ${result}`)
+      } else {
+        console.log('Uh oh, updating thought went wrong')
+        res.status(500).json({ message: 'updating thought went wrong'})
+      }
+    }
+  )
+}
+
+const deleteThought = async (req, res) => {
+  const thoughtId = req.params.thoughtId
+  Thought.findByIdAndDelete(thoughtId)
+    .exec(function(err, removed) {
+      User.findOneAndUpdate(
+        {"thoughts": {$elemMatch: { $eq: req.params.thoughtId}}},
+        {$pull: { thoughts: Types.ObjectId(req.params.thoughtId)}},
+        { new: true },
+        (err, removedFromUser) => {
+          if (err) {
+            console.error(err)
+          } else {
+            res.status(200).json(removedFromUser)
+          }
+        }
+      )
+    })
+}
+
 module.exports = {
   getThoughts,
   getSingleThought,
-  createThought
+  createThought,
+  updateThought,
+  deleteThought
 }

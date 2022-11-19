@@ -25,7 +25,7 @@ const names = [
   'Smith',
   'Jones',
   'Coollastname',
-  'enter_name_here',
+  'Gregory',
   'Ze',
   'Zechariah',
   'Zeek',

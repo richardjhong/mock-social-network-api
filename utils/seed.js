@@ -19,7 +19,6 @@ connection.once('open', async () => {
   for (let i = 0; i < 10; i++) {
     const name = getRandomName();
     let email = getRandomEmail();
-    const thought = getRandomThought();
     if (usedEmails.indexOf(email) !== -1) {
       while (usedEmails.indexOf(email) !== -1) {
         email = getRandomEmail();
@@ -30,7 +29,7 @@ connection.once('open', async () => {
     const newUser = {
       username: name,
       email: email,
-      thoughts: [thought],
+      thoughts: [],
       friends: []
     };
     users.push(newUser);

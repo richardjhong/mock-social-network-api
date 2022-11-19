@@ -1,37 +1,5 @@
 const { Schema, model } = require('mongoose')
 
-const formatDate = () => {
-  const date = new Date()
-  return date.toDateString()
-}
-
-const reactionSchema = new Schema(
-  {
-    reactionId:
-    {
-      type: Schema.Types.ObjectId,
-      default: new Schema.Types.ObjectId
-    },
-    reactionBody:
-    {
-      type: String,
-      required: true,
-      maxLength: 280
-    },
-    username: 
-    {
-      type: String,
-      required: true,
-    },
-    createdAt:
-    {
-      type: Date,
-      default: Date.now,
-      get: formatDate
-    }
-  }
-)
-
 const thoughtSchema = new Schema(
   {
     thoughtText: 
@@ -44,20 +12,29 @@ const thoughtSchema = new Schema(
     {
       type: Date,
       default: Date.now,
-      get: formatDate
     },
-    user: 
+    username: 
     {
       type: String,
       required: true
     },
-    reactions: [reactionSchema]
+    reactions: [{ type: Schema.Types.ObjectId, ref: 'reaction' }],
+  },
+  {
+    toJSON: {
+      virtuals: true
+    },
+    id: false
   }
 )
 
 thoughtSchema.virtual('reactionCount').get(function () {
   return this.reactions.length
 })
+
+// thoughtSchema.methods.
+
+
 
 const Thought = model('thought', thoughtSchema)
 

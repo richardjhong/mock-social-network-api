@@ -23,6 +23,9 @@ const reactionSchema = new Schema(
       type: Date,
       default: Date.now,
     }
+  },
+  {
+    _id: false
   }
 )
 

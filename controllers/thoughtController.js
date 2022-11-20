@@ -1,6 +1,6 @@
 const { Types } = require('mongoose')
 const Thought = require('../models/Thought')
-const User = require('../models/User')
+const User = require('../models/User') 
 
 const getThoughts = (req, res) => {
   Thought.find()
@@ -80,10 +80,35 @@ const deleteThought = async (req, res) => {
     })
 }
 
+const addReaction = (req, res) => {
+  const thoughtId = req.params.thoughtId
+  Thought.findOneAndUpdate(
+    { _id: thoughtId },
+    { $push: { reactions: 
+      {
+        reactionBody: req.body.reactionBody,
+        username: req.body.username,
+      }
+    }},
+    { new: true }
+  )
+  .then((thought) => 
+    !thought
+      ? res
+        .status(404)
+        .json({ message: 'reaction created, but no thought found with this ID'})
+      : res.json({ message: 'reaction created' })
+  )
+  .catch((err) => {
+    console.error(err)
+  })
+}
+
 module.exports = {
   getThoughts,
   getSingleThought,
   createThought,
   updateThought,
-  deleteThought
+  deleteThought,
+  addReaction
 }

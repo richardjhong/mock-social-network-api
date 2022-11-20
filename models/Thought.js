@@ -23,7 +23,8 @@ const thoughtSchema = new Schema(
   },
   {
     toJSON: {
-      virtuals: true
+      virtuals: true,
+      getters: true
     },
     id: false
   }
@@ -32,8 +33,14 @@ const thoughtSchema = new Schema(
 thoughtSchema
   .virtual('reactionCount')
   .get(function () {
-  return this.reactions.length
-})
+    return this.reactions.length
+  })
+
+thoughtSchema
+  .virtual('formattedDate')
+  .get(function() {
+    return this.createdAt.toLocaleDateString()
+  })
 
 const Thought = model('thought', thoughtSchema)
 

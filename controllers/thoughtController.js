@@ -1,4 +1,3 @@
-const { Types } = require('mongoose')
 const { Thought, User } = require('../models')
 
 const getThoughts = (req, res) => {

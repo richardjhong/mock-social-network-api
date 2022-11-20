@@ -1,4 +1,4 @@
-const User = require('../models/User');
+const { Thought, User } = require('../models')
 
 const getUsers = (req, res) => {
   User.find()
@@ -42,15 +42,14 @@ const updateUser = (req, res) => {
 }
 
 const deleteUser = (req, res) => {
-  const userId = req.params.userId
-  User.findByIdAndDelete(userId, (err, result) => {
-    if (err) {
-      console.log(err)
-    } else {
-      res.status(200).json(result);
-      console.log("Deleted : ", result);
-    }
-  })
+  User.findOneAndDelete({ _id: req.params.userId })
+    .then((user) =>
+      !user
+        ? res.status(404).json({ message: 'No user with that ID' })
+        : Thought.deleteMany({ _id: { $in: user.thoughts } })
+    )
+    .then(() => res.json({ message: 'User and thoughts deleted!' }))
+    .catch((err) => res.status(500).json(err));
 }
 
 const addFriend = (req, res) => {

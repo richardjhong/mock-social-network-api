@@ -1,9 +1,33 @@
 const { Thought, User } = require('../models')
 
+const formatDate = (date) => {
+  return date.toLocaleDateString()
+}
+
+const formatReactionDate = (reactions) => {
+  return reactions.map(reaction => {
+    return {
+      reactionBody: reaction.reactionBody,
+      username: reaction.username,
+      reactionId: reaction.reactionId,
+      createdAt: formatDate(reaction.createdAt)
+    }
+  })
+}
+
 const getThoughts = (req, res) => {
   Thought.find()
     .populate('reactions')
-    .then((thoughts) => res.json(thoughts))
+    .then((thoughts) => res.json(thoughts.map(thought => {
+      return {
+        _id: thought._id,
+        thoughtText: thought.thoughtText,
+        createdAt: thought.createdAt.toLocaleDateString(),
+        username: thought.username,
+        reactions: formatReactionDate(thought.reactions),
+        reactionCount: thought.reactionCount
+      }
+    })))
     .catch((err) => res.status(500).json(err))
 }
 
@@ -12,7 +36,14 @@ const getSingleThought = (req, res) => {
     .then((thought) => 
       !thought
         ? res.status(404).json({ message: 'No thought with that ID'})
-        : res.json(thought)
+        : res.json({
+          _id: thought._id,
+          thoughtText: thought.thoughtText,
+          createdAt: formatDate(thought.createdAt),
+          username: thought.username,
+          reactions: formatReactionDate(thought.reactions),
+          reactionCount: thought.reactionCount
+        })
     )
     .catch((err) => res.status(500).json(err))
 }

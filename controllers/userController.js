@@ -1,18 +1,63 @@
 const { Thought, User } = require('../models')
 
+const formatDate = (date) => {
+  return date.toLocaleDateString()
+}
+
+const formatReactionDate = (reactions) => {
+  return reactions.map(reaction => {
+    return {
+      reactionBody: reaction.reactionBody,
+      username: reaction.username,
+      reactionId: reaction.reactionId,
+      createdAt: formatDate(reaction.createdAt)
+    }
+  })
+}
+
+const formatThoughtDate = (thoughts) => {
+  return thoughts.map(thought => {
+    return {
+      _id: thought._id,
+      thoughtText: thought.thoughtText,
+      username: thought.username,
+      reactions: formatReactionDate(thought.reactions),
+      createdAt: formatDate(thought.createdAt),
+      reactionCount: thought.reactionCount
+    }
+  })
+}
+
 const getUsers = (req, res) => {
   User.find()
     .populate('thoughts')
-    .then((users) => res.json(users))
+    .then((users) => res.json(users.map(user => {
+      return {
+        _id: user._id,
+        username: user.username,
+        email: user.email,
+        thoughts: formatThoughtDate(user.thoughts),
+        friends: [...user.friends],
+        friendCount: user.friendCount
+      }
+    })))
     .catch((err) => res.status(500).json(err));
 }
 
 const getSingleUser = (req, res) => {
   User.findOne({ _id: req.params.userId })
+    .populate('thoughts')
     .then((user) =>
       !user
         ? res.status(404).json({ message: 'No user with that ID' })
-        : res.json(user)
+        : res.json({
+          _id: user._id,
+          username: user.username,
+          email: user.email,
+          thoughts: formatThoughtDate(user.thoughts),
+          friends: [...user.friends],
+          friendCount: user.friendCount
+        })
     )
     .catch((err) => res.status(500).json(err));
 }

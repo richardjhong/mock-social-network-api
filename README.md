@@ -62,6 +62,9 @@ For this program, the logic is mostly spread amongst three folders:
   * controllers
     - Multiple functions are defined here and then exported into routes for appropriate logic; These functions act as CRUD operations and handle the different mongoose interactions between the different Schemas/Models
 
+## Demo
+[Video](https://drive.google.com/file/d/1IgOfKsyLt1RkmUnWRs-N4AkdPqfx_N7C/view)
+
 ## Screenshot
 ![screenshot](./assets/images/screenshot.png)
 
@@ -72,6 +75,3 @@ This app was licensed under the MIT License.
 Questions, comments, concerns? Send me an email at rhong24@gmail.com.
 
 
-
-## Demo
-[Video](https://drive.google.com/file/d/1IgOfKsyLt1RkmUnWRs-N4AkdPqfx_N7C/view)

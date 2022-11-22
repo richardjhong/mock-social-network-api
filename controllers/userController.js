@@ -2,6 +2,7 @@ const { Thought, User } = require('../models')
 
 const getUsers = (req, res) => {
   User.find()
+    .populate('thoughts')
     .then((users) => res.json(users))
     .catch((err) => res.status(500).json(err));
 }
@@ -16,29 +17,28 @@ const getSingleUser = (req, res) => {
     .catch((err) => res.status(500).json(err));
 }
 
-
 const createUser = (req, res) =>{
   User.create(req.body)
-    .then((dbUserData) => res.json(dbUserData))
+    .then((user) => res.json(user))
     .catch((err) => res.status(500).json(err));
 }
 
 const updateUser = (req, res) => {
   const userId = req.params.userId
   User.findOneAndUpdate(
-    userId,
+    { _id: userId},
     { $set: req.body },
     { new: true},
-    (err, result) => {
-      if (result) {
-        res.status(200).json(result);
-        console.log(`Updated user: ${result}`);
-      } else {
-        console.log('Uh Oh, updating user went wrong');
-        res.status(500).json({ message: 'updating user went wrong' });
-      }
-    }
   )
+  .then((user) =>
+    !user
+      ? res.status(404).json({ message: 'No user found with this id!' })
+      : res.json(user)
+  )
+  .catch((err) => {
+    console.log(err);
+    res.status(500).json(err);
+  });
 }
 
 const deleteUser = (req, res) => {
@@ -71,7 +71,7 @@ const addFriend = (req, res) => {
 }
 
 const removeFriend = (req, res) => {
-  const userId = req.params.userIdfriendId = req.params.friendId
+  const userId = req.params.userId, friendId = req.params.friendId
   User.findOneAndUpdate(
     { _id: userId },
     { $pull: { friends: friendId }},

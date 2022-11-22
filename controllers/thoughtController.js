@@ -2,6 +2,7 @@ const { Thought, User } = require('../models')
 
 const getThoughts = (req, res) => {
   Thought.find()
+    .populate('reactions')
     .then((thoughts) => res.json(thoughts))
     .catch((err) => res.status(500).json(err))
 }
@@ -49,16 +50,16 @@ const updateThought = (req, res) => {
     { _id: thoughtId },
     { $set: req.body },
     { new: true },
-    (err, result) => {
-      if (result) {
-        res.status(200).json(result)
-        console.log(`Updated thought: ${result}`)
-      } else {
-        console.log('Uh oh, updating thought went wrong')
-        res.status(500).json({ message: 'updating thought went wrong'})
-      }
-    }
   )
+  .then((thought) =>
+    !thought
+      ? res.status(404).json({ message: 'No thought found with this id!' })
+      : res.json(thought)
+  )
+  .catch((err) => {
+    console.log(err);
+    res.status(500).json(err);
+  });
 }
 
 const deleteThought = async (req, res) => {

@@ -8,7 +8,7 @@ const formatReactionDate = (reactions) => {
   return reactions.map(reaction => {
     return {
       ...reaction._doc,
-      createdAt: formatDate(reaction.createdAt)
+      createdAt: formatDate(reaction._doc.createdAt)
     }
   })
 }
@@ -19,8 +19,8 @@ const getThoughts = (req, res) => {
     .then((thoughts) => res.json(thoughts.map(thought => {
       return {
         ...thought._doc,
-        createdAt: thought.createdAt.toLocaleDateString(),
-        reactions: formatReactionDate(thought.reactions),
+        createdAt: thought._doc.createdAt.toLocaleDateString(),
+        reactions: formatReactionDate(thought._doc.reactions),
       }
     })))
     .catch((err) => res.status(500).json(err))

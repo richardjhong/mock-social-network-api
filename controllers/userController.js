@@ -8,7 +8,7 @@ const formatReactionDate = (reactions) => {
   return reactions.map(reaction => {
     return {
       ...reaction._doc,
-      createdAt: formatDate(reaction.createdAt)
+      createdAt: formatDate(reaction._doc.createdAt)
     }
   })
 }
@@ -17,8 +17,8 @@ const formatThoughtDate = (thoughts) => {
   return thoughts.map(thought => {
     return {
       ...thought._doc,
-      reactions: formatReactionDate(thought.reactions),
-      createdAt: formatDate(thought.createdAt),
+      reactions: formatReactionDate(thought._doc.reactions),
+      createdAt: formatDate(thought._doc.createdAt),
     }
   })
 }
@@ -29,7 +29,7 @@ const getUsers = (req, res) => {
     .then((users) => res.json(users.map(user => {
       return {
         ...user._doc,
-        thoughts: formatThoughtDate(user.thoughts),
+        thoughts: formatThoughtDate(user._doc.thoughts),
       }
     })))
     .catch((err) => res.status(500).json(err));
@@ -43,7 +43,7 @@ const getSingleUser = (req, res) => {
         ? res.status(404).json({ message: 'No user with that ID' })
         : res.json({
           ...user._doc,
-          thoughts: formatThoughtDate(user.thoughts),
+          thoughts: formatThoughtDate(user._doc.thoughts),
         })
     )
     .catch((err) => res.status(500).json(err));

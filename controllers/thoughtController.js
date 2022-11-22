@@ -7,9 +7,7 @@ const formatDate = (date) => {
 const formatReactionDate = (reactions) => {
   return reactions.map(reaction => {
     return {
-      reactionBody: reaction.reactionBody,
-      username: reaction.username,
-      reactionId: reaction.reactionId,
+      ...reaction._doc,
       createdAt: formatDate(reaction.createdAt)
     }
   })
@@ -20,12 +18,9 @@ const getThoughts = (req, res) => {
     .populate('reactions')
     .then((thoughts) => res.json(thoughts.map(thought => {
       return {
-        _id: thought._id,
-        thoughtText: thought.thoughtText,
+        ...thought._doc,
         createdAt: thought.createdAt.toLocaleDateString(),
-        username: thought.username,
         reactions: formatReactionDate(thought.reactions),
-        reactionCount: thought.reactionCount
       }
     })))
     .catch((err) => res.status(500).json(err))
@@ -33,18 +28,18 @@ const getThoughts = (req, res) => {
 
 const getSingleThought = (req, res) => {
   Thought.findOne({ _id: req.params.thoughtId })
-    .then((thought) => 
-      !thought
-        ? res.status(404).json({ message: 'No thought with that ID'})
-        : res.json({
-          _id: thought._id,
-          thoughtText: thought.thoughtText,
-          createdAt: formatDate(thought.createdAt),
-          username: thought.username,
-          reactions: formatReactionDate(thought.reactions),
-          reactionCount: thought.reactionCount
-        })
-    )
+    .then((thought) => {
+      if (!thought) {
+        res.status(404).json({ message: 'No thought with that ID'})
+      } else {
+        const formattedDateThought = {
+          ...thought._doc,
+          createdAt: formatDate(thought._doc.createdAt),
+          reactions: formatReactionDate(thought._doc.reactions),
+        }
+        res.json(formattedDateThought)
+      }
+})
     .catch((err) => res.status(500).json(err))
 }
 
